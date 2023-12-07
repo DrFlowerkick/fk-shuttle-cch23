@@ -89,6 +89,40 @@ async fn candy_contest(mut reindeers: Json<Vec<Reindeer>>) -> Json<ContestResult
    Json(result)
 }
 
+#[derive(serde::Serialize, Default)]
+struct ShElfCounter {
+    elf: u32,
+    #[serde(rename = "elf on a shelf")]
+    elf_on_a_shelf: u32,
+    #[serde(rename = "shelf with no elf on it")]
+    shelf_with_no_elf_on_it: u32,
+}
+
+async fn sh_elf_counting(input: String) -> Json<ShElfCounter> {
+    let mut result = ShElfCounter::default();
+    let mut search = input.as_str();
+    let mut last_left = String::new();
+    loop {
+        if let Some((left, right)) = search.split_once("elf") {
+            result.elf += 1;
+            if last_left == "" {
+                last_left = left.into();
+            } else {
+                last_left = last_left + "elf" + left;
+            }
+            if last_left.ends_with("elf on a sh") {
+                result.elf_on_a_shelf += 1;
+            } else if last_left.ends_with("sh") {
+                result.shelf_with_no_elf_on_it = 1;
+            }
+            search = right;
+        } else {
+            break;
+        }
+    }
+    Json(result)
+}
+
 #[shuttle_runtime::main]
 async fn main() -> shuttle_axum::ShuttleAxum {
     let router = Router::new()
@@ -116,7 +150,8 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .route("/1/:cl0/:cl1/:cl2/:cl3/:cl4/:cl5/:cl6/:cl7/:cl8/:cl9/:cl10/:cl11/:cl12/:cl13/:cl14/:cl15/:cl16/:cl17/:cl18/:cl19", get(cube_sled))
         .route("/1/:cl0/:cl1/:cl2/:cl3/:cl4/:cl5/:cl6/:cl7/:cl8/:cl9/:cl10/:cl11/:cl12/:cl13/:cl14/:cl15/:cl16/:cl17/:cl18/:cl19/:cl20", get(cube_sled))
         .route("/4/strength", post(reindeer_strength))
-        .route("/4/contest", post(candy_contest));
+        .route("/4/contest", post(candy_contest))
+        .route("/6", post(sh_elf_counting));
 
     Ok(router.into())
 }
