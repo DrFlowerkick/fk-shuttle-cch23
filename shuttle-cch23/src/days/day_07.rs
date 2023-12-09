@@ -1,23 +1,17 @@
 //!day_07.rs
 
-use axum::{routing::get, Router, http::HeaderMap};
+use axum::{routing::get, Router, TypedHeader, headers::Cookie};
 use base64::{Engine as _, engine::general_purpose};
 use serde_json::{Value, Map};
 
 pub fn get_routes() -> Router {
     Router::new()
-        .route("/7/decode", get(cookie_decode))
-        .route("/7/bake", get(bake_cookies))
+        .route("/7a/decode", get(cookie_decode))
+        .route("/7a/bake", get(bake_cookies))
 }
 
-async fn cookie_decode(header: HeaderMap) -> String {
-    let recipe = &header
-        .get("cookie")
-        .expect("cookie not found")
-        .to_str()
-        .expect("bytes could not convert to &str")["recipe=".len()..];
-    
-    let bytes = general_purpose::STANDARD.decode(recipe).unwrap();
+async fn cookie_decode(TypedHeader(cookie): TypedHeader<Cookie>) -> String {
+    let bytes = general_purpose::STANDARD.decode(cookie.get("recipe").unwrap()).unwrap();
     String::from_utf8(bytes).unwrap()
 }
 
@@ -42,8 +36,8 @@ fn consume_ingredients(json_recipe: &Map<String, Value>, json_pantry: &mut Map<S
     }
 }
 
-async fn bake_cookies(header: HeaderMap) -> String {
-    let recipe_pantry = cookie_decode(header).await;
+async fn bake_cookies(TypedHeader(cookie): TypedHeader<Cookie>) -> String {
+    let recipe_pantry = cookie_decode(TypedHeader(cookie)).await;
     let json_rc: Value = serde_json::from_str(&recipe_pantry).expect("json value convert failed");
     let json_recipe = json_rc["recipe"].as_object().unwrap();
     let mut json_pantry = json_rc["pantry"].as_object().unwrap().clone();
