@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = { version = "0.6.20", features = ["headers"] }
+axum = { version = "0.6.20", features = ["headers", "multipart"] }
 shuttle-axum = "0.35.0"
 shuttle-runtime = "0.35.0"
 tokio = "1.28.2"
@@ -14,3 +14,5 @@ serde_json = { version = "1.0.108", features = ["preserve_order"] }
 base64 = "0.21.5"
 rustemon = "3.2.1"
 anyhow = "1.0.75"
+tower-http = { version = "0.4.4", features = ["fs"] }
+image = "0.24.7"
