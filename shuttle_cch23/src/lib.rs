@@ -44,9 +44,8 @@ where
 // type alias for Result
 type AppResult<T> = std::result::Result<T, AppError>;
 
-#[shuttle_runtime::main]
-async fn main() -> shuttle_axum::ShuttleAxum {
-    let router = Router::new()
+fn router() -> Router {
+    Router::new()
         .route("/", get(hello_world))
         .route("/-1/error", get(fake_error))
         .merge(days::day_01::get_routes())
@@ -54,7 +53,5 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .merge(days::day_06::get_routes())
         .merge(days::day_07::get_routes())
         .merge(days::day_08::get_routes())
-        .merge(days::day_11::get_routes());
-
-    Ok(router.into())
+        .merge(days::day_11::get_routes())
 }
