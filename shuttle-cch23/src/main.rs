@@ -1,6 +1,11 @@
 pub mod days;
 
-use axum::{routing::get, Router, response::{Response, IntoResponse}, http::StatusCode};
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    routing::get,
+    Router,
+};
 
 /// Day -1
 async fn hello_world() -> &'static str {

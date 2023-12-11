@@ -1,10 +1,9 @@
 //!day_06.rs
 
-use axum::{Json, routing::post, Router};
+use axum::{routing::post, Json, Router};
 
 pub fn get_routes() -> Router {
-    Router::new()
-        .route("/6", post(sh_elf_counting))
+    Router::new().route("/6", post(sh_elf_counting))
 }
 
 #[derive(serde::Serialize, Default)]
@@ -31,7 +30,7 @@ async fn sh_elf_counting(input: String) -> Json<ShElfCounter> {
             if last_left.ends_with("elf on a sh") {
                 result.elf_on_a_shelf += 1;
             } else if last_left.ends_with("sh") {
-                result.shelf_with_no_elf_on_it = 1;
+                result.shelf_with_no_elf_on_it += 1;
             }
             search = right;
         } else {

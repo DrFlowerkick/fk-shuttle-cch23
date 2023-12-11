@@ -1,6 +1,6 @@
 //!day_04.rs
 
-use axum::{Json, routing::post, Router};
+use axum::{routing::post, Json, Router};
 
 pub fn get_routes() -> Router {
     Router::new()
@@ -57,20 +57,35 @@ async fn candy_contest(mut reindeers: Json<Vec<Reindeer>>) -> Json<ContestResult
     let mut result = ContestResults::new();
     // fastest: sort from biggest to lowest -> fastest is at index 0
     reindeers.sort_by(|b, a| a.speed.partial_cmp(&b.speed).unwrap());
-    result.fastest = format!("Speeding past the finish line with a strength of {} is {}", reindeers[0].strength, reindeers[0].name);
-   
-   // tallest: sort from biggest to lowest -> tallest is at index 0
+    result.fastest = format!(
+        "Speeding past the finish line with a strength of {} is {}",
+        reindeers[0].strength, reindeers[0].name
+    );
+
+    // tallest: sort from biggest to lowest -> tallest is at index 0
     reindeers.sort_by(|b, a| a.height.partial_cmp(&b.height).unwrap());
-    result.tallest = format!("{} is standing tall with his {} cm wide antlers", reindeers[0].name, reindeers[0].antler_width);
-    
-   // magician: sort from biggest to lowest -> most snow_magic_power is at index 0
-   reindeers.sort_by(|b, a| a.snow_magic_power.partial_cmp(&b.snow_magic_power).unwrap());
-   result.magician = format!("{} could blast you away with a snow magic power of {}", reindeers[0].name, reindeers[0].snow_magic_power);
+    result.tallest = format!(
+        "{} is standing tall with his {} cm wide antlers",
+        reindeers[0].name, reindeers[0].antler_width
+    );
 
-   
-   // consumer: sort from biggest to lowest -> most candies_eaten_yesterday is at index 0
-   reindeers.sort_by(|b, a| a.candies_eaten_yesterday.partial_cmp(&b.candies_eaten_yesterday).unwrap());
-   result.consumer = format!("{} ate lots of candies, but also some {}", reindeers[0].name, reindeers[0].favorite_food);
+    // magician: sort from biggest to lowest -> most snow_magic_power is at index 0
+    reindeers.sort_by(|b, a| a.snow_magic_power.partial_cmp(&b.snow_magic_power).unwrap());
+    result.magician = format!(
+        "{} could blast you away with a snow magic power of {}",
+        reindeers[0].name, reindeers[0].snow_magic_power
+    );
 
-   Json(result)
+    // consumer: sort from biggest to lowest -> most candies_eaten_yesterday is at index 0
+    reindeers.sort_by(|b, a| {
+        a.candies_eaten_yesterday
+            .partial_cmp(&b.candies_eaten_yesterday)
+            .unwrap()
+    });
+    result.consumer = format!(
+        "{} ate lots of candies, but also some {}",
+        reindeers[0].name, reindeers[0].favorite_food
+    );
+
+    Json(result)
 }
