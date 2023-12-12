@@ -1,6 +1,6 @@
 //!day_08.rs
 
-use crate::AppResult;
+use crate::app_error::AppResult;
 use axum::{extract::Path, routing::get, Router};
 use rustemon::{client::RustemonClient, pokemon::pokemon};
 

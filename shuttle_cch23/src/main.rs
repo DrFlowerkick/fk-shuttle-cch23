@@ -1,6 +1,6 @@
 //!main.rs
 
-use shuttle_cch23::router;
+use cch23_drflowerkick::router;
 
 #[shuttle_runtime::main]
 async fn axum() -> shuttle_axum::ShuttleAxum {
