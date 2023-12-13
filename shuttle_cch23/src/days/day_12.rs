@@ -1,18 +1,18 @@
 //!day_12.rs
 
-use crate::{
-    app_error::AppResult,
-    SharedState,
-};
+use crate::{app_error::AppResult, SharedState};
 use axum::{
     extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
+use chrono::{
+    prelude::{DateTime, Utc},
+    Datelike,
+};
 use std::sync::Arc;
 use std::time::{Instant, SystemTime};
 use ulid::Ulid;
-use chrono::{prelude::{DateTime, Utc}, Datelike};
 
 pub fn get_routes(state: &SharedState) -> Router {
     Router::new()
@@ -58,9 +58,12 @@ struct AnalysisResults {
     lsb_is_1: i32,
 }
 
-async fn ulid_analysis(Path(weekday): Path<u32>, Json(data): Json<Vec<Ulid>>) -> AppResult<Json<AnalysisResults>> {
+async fn ulid_analysis(
+    Path(weekday): Path<u32>,
+    Json(data): Json<Vec<Ulid>>,
+) -> AppResult<Json<AnalysisResults>> {
     let mut analysis_results = AnalysisResults::default();
-    let now: DateTime<Utc> =  SystemTime::now().into();
+    let now: DateTime<Utc> = SystemTime::now().into();
     for ulid in data.iter() {
         let dt: DateTime<Utc> = ulid.datetime().into();
         if dt.day() == 24 && dt.month() == 12 {
