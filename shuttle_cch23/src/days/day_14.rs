@@ -1,9 +1,8 @@
 //!day_14.rs
 
-use crate::app_error::{AppError, AppResult};
 use axum::{
     routing::post,
-    Json, Router, response::{IntoResponse, Html},
+    Json, Router, response::IntoResponse,
 };
 use serde::Deserialize;
 use askama::Template;
@@ -20,12 +19,8 @@ struct UnsafeTemplate {
     content: String,
 }
 
-async fn unsafe_render(Json(input): Json<UnsafeTemplate>) -> AppResult<Html<String>> {
-    eprintln!("{}", input.content);
-    let html = input.render().map_err(AppError::to_bad_request)?.trim().to_owned();
-    eprintln!("{}", html);
-    //Ok(input)
-    Ok(Html(html))
+async fn unsafe_render(Json(input): Json<UnsafeTemplate>) -> impl IntoResponse {
+    input
 }
 
 
