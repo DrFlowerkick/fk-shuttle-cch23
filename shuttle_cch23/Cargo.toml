@@ -22,3 +22,5 @@ shuttle-shared-db = { version = "0.35.1", features = ["postgres-rustls"] }
 sqlx = { version = "0.7.3", features = ["postgres"] }
 askama = { version = "0.12.1", features = ["with-axum"] }
 askama_axum = "0.3.0"
+emojis = "0.6.1"
+sha256 = "1.4.0"

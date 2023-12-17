@@ -1,11 +1,8 @@
 //!day_14.rs
 
-use axum::{
-    routing::post,
-    Json, Router, response::IntoResponse,
-};
-use serde::Deserialize;
 use askama::Template;
+use axum::{response::IntoResponse, routing::post, Json, Router};
+use serde::Deserialize;
 
 pub fn get_routes() -> Router {
     Router::new()
@@ -22,7 +19,6 @@ struct UnsafeTemplate {
 async fn unsafe_render(Json(input): Json<UnsafeTemplate>) -> impl IntoResponse {
     input
 }
-
 
 #[derive(Template, Deserialize)]
 #[template(path = "index.html")]
