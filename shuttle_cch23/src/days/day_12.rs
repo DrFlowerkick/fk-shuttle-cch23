@@ -1,6 +1,6 @@
 //!day_12.rs
 
-use crate::{app_error::AppResult, SharedState};
+use crate::app_error::AppResult;
 use axum::{
     extract::{Path, State},
     routing::{get, post},
@@ -10,11 +10,21 @@ use chrono::{
     prelude::{DateTime, Utc},
     Datelike,
 };
+use std::collections::HashMap;
 use std::sync::Arc;
+use std::sync::RwLock;
 use std::time::{Instant, SystemTime};
 use ulid::Ulid;
 
-pub fn get_routes(state: &SharedState) -> Router {
+type SharedState = Arc<RwLock<AppState>>;
+
+#[derive(Default)]
+struct AppState {
+    db: HashMap<String, Instant>,
+}
+
+pub fn get_routes() -> Router {
+    let state = SharedState::default();
     Router::new()
         .route("/12/save/:string", post(save_string))
         .route("/12/load/:string", get(load_string))
