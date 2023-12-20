@@ -35,7 +35,8 @@ pub fn router(state: &SharedState, pool: PgPool) -> Router {
         .merge(days::day_08::get_routes())
         .merge(days::day_11::get_routes())
         .merge(days::day_12::get_routes(state))
-        .merge(days::day_13::get_routes(pool))
+        .merge(days::day_13::get_routes(pool.clone()))
         .merge(days::day_14::get_routes())
         .merge(days::day_15::get_routes())
+        .merge(days::day_18::get_routes(pool))
 }

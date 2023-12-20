@@ -29,14 +29,14 @@ async fn simple_select(State(pool): State<PgPool>) -> AppResult<String> {
 }
 
 async fn reset_data_base(State(pool): State<PgPool>) -> AppResult<StatusCode> {
-    pool.execute(include_str!("../../sql/schema.sql"))
+    pool.execute(include_str!("../../sql/schema_day_13.sql"))
         .await
         .map_err(AppError::to_bad_request)?;
     Ok(StatusCode::OK)
 }
 
-#[derive(Deserialize)]
-struct Orders {
+#[derive(Deserialize, Debug)]
+pub struct Order {
     id: i32,
     region_id: i32,
     gift_name: String,
@@ -48,10 +48,13 @@ struct ResultTask2 {
     total: i64,
 }
 
-async fn recieve_oders(
+pub async fn recieve_oders(
     State(pool): State<PgPool>,
-    Json(orders): Json<Vec<Orders>>,
+    Json(orders): Json<Vec<Order>>,
 ) -> AppResult<StatusCode> {
+    if orders.len() == 0 {
+        return Ok(StatusCode::OK);
+    }
     let mut query_builder: QueryBuilder<Postgres> =
         QueryBuilder::new("INSERT INTO orders (id, region_id, gift_name, quantity)");
     query_builder.push_values(orders, |mut b, order| {
