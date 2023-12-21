@@ -1,13 +1,13 @@
 //!day_21.rs
 
-use crate::app_error::{AppResult, AppError};
+use crate::app_error::{AppError, AppResult};
 use axum::{extract::Path, routing::get, Router};
 
+use country_boundaries::{CountryBoundaries, LatLon, BOUNDARIES_ODBL_360X180};
+use country_emoji::name as country_name;
 use dms_coordinates::DMS;
 use s2::cell::Cell;
 use s2::cellid::CellID;
-use country_boundaries::{CountryBoundaries, LatLon, BOUNDARIES_ODBL_360X180};
-use country_emoji::name as country_name;
 
 pub fn get_routes() -> Router {
     eprintln!("loading routes day_21");
@@ -41,8 +41,13 @@ async fn s2_cell_id_to_country(Path(binary): Path<String>) -> AppResult<String> 
     let boundaries = CountryBoundaries::from_reader(BOUNDARIES_ODBL_360X180)?;
     let position = LatLon::new(center.latitude().deg(), center.longitude().deg())?;
     let codes = boundaries.ids(position);
-    eprintln!("binary: {}, position: {}, codes: {:?}", binary, position, codes);
-    let code = *codes.last().ok_or(AppError::bad_request("coordinates not in country"))?;
+    eprintln!(
+        "binary: {}, position: {}, codes: {:?}",
+        binary, position, codes
+    );
+    let code = *codes
+        .last()
+        .ok_or(AppError::bad_request("coordinates not in country"))?;
     let mut result = country_name(code).ok_or(AppError::bad_request("Unknown Country Code"))?;
     // country-emoji returns for "BN" "Brunei Darussalam", but Challenge test expects only "Brunei"
     if code == "BN" {

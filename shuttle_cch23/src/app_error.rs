@@ -14,6 +14,12 @@ pub struct AppError {
 }
 
 impl AppError {
+    pub fn internal_error(err: impl Display) -> Self {
+        Self {
+            status_code: StatusCode::INTERNAL_SERVER_ERROR,
+            err: anyhow!("{}", err),
+        }
+    }
     pub fn bad_request(err: impl Display) -> Self {
         Self {
             status_code: StatusCode::BAD_REQUEST,
