@@ -1,6 +1,6 @@
 //!day_19.rs
 
-use crate::app_error::{AppResult, AppError};
+use crate::app_error::{AppError, AppResult};
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -10,6 +10,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use futures::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -17,7 +18,6 @@ use tokio::sync::{
     mpsc::{self, UnboundedReceiver, UnboundedSender},
     RwLock,
 };
-use futures::{SinkExt, StreamExt};
 
 type SharedState = Arc<RwLock<AppState>>;
 
@@ -82,13 +82,23 @@ async fn return_counter(State(state): State<SharedState>) -> AppResult<String> {
     Ok(format!("{}", state.read().await.counter))
 }
 
-async fn start_chat(ws: WebSocketUpgrade, State(state): State<SharedState>, Path((room_number, user_name)): Path<(i128, String)>) -> impl IntoResponse {
+async fn start_chat(
+    ws: WebSocketUpgrade,
+    State(state): State<SharedState>,
+    Path((room_number, user_name)): Path<(i128, String)>,
+) -> impl IntoResponse {
     ws.on_upgrade(move |socket| handle_chat_socket(socket, state, room_number, user_name))
 }
 
-async fn handle_chat_socket(ws: WebSocket, state: SharedState, room_number: i128, user_name: String) {
+async fn handle_chat_socket(
+    ws: WebSocket,
+    state: SharedState,
+    room_number: i128,
+    user_name: String,
+) {
     let (mut sender, mut receiver) = ws.split();
-    let (tx, mut rx): (UnboundedSender<Message>, UnboundedReceiver<Message>) = mpsc::unbounded_channel();
+    let (tx, mut rx): (UnboundedSender<Message>, UnboundedReceiver<Message>) =
+        mpsc::unbounded_channel();
 
     // Receive messages from the channel and send them to the user
     let state_clone = state.clone();
@@ -102,7 +112,11 @@ async fn handle_chat_socket(ws: WebSocket, state: SharedState, room_number: i128
     });
 
     // Add the room and user to the list of connected users
-    state.write().await.db.insert((room_number, user_name.clone()), tx);
+    state
+        .write()
+        .await
+        .db
+        .insert((room_number, user_name.clone()), tx);
 
     // Receive messages from the user and broadcast them
     while let Some(Ok(result)) = receiver.next().await {
@@ -132,7 +146,13 @@ fn enrich_result(result: Message, user_name: String) -> AppResult<Message> {
 
 async fn broadcast_msg(msg: Message, room_number: i128, state: &SharedState) {
     if let Message::Text(msg) = msg {
-        for ((_room, _name), tx) in state.read().await.db.iter().filter(|((r, _), _)| *r == room_number) {
+        for ((_room, _name), tx) in state
+            .read()
+            .await
+            .db
+            .iter()
+            .filter(|((r, _), _)| *r == room_number)
+        {
             tx.send(Message::Text(msg.clone()))
                 .expect("Failed to send Message")
         }

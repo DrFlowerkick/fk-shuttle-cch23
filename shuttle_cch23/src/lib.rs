@@ -29,4 +29,5 @@ pub fn router(pool: PgPool) -> Router {
         .merge(days::day_15::get_routes())
         .merge(days::day_18::get_routes(pool))
         .merge(days::day_19::get_routes())
+        .merge(days::day_20::get_routes())
 }
