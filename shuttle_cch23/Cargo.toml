@@ -3,6 +3,12 @@ name = "cch23-drflowerkick"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = ["current"]
+past = []
+current = []
+all = ["past", "current"]
+
 [dependencies]
 axum = { version = "0.6.20", features = ["headers", "multipart", "ws"] }
 shuttle-axum = "0.35.0"
@@ -27,3 +33,8 @@ sha256 = "1.4.0"
 futures = "0.3.29"
 tempfile = "3.8.1"
 tar = "0.4.40"
+cfg-if = "1.0.0"
+s2 = "0.0.12"
+dms-coordinates = "1.1.0"
+country-boundaries = "1.2.0"
+country-emoji = "0.2.0"
