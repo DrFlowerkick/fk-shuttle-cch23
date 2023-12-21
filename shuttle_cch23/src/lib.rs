@@ -21,7 +21,7 @@ cfg_if::cfg_if! {
     if #[cfg(not(feature = "all"))] {
         pub fn router() -> Router {
             Router::new()
-                .merge(days::day_21::get_routes())
+                .merge(days::day_22::get_routes())
         }
     } else {
         pub fn router(pool: PgPool) -> Router {
@@ -42,6 +42,8 @@ cfg_if::cfg_if! {
                 .merge(days::day_19::get_routes())
                 .merge(days::day_20::get_routes())
                 .merge(days::day_21::get_routes())
+                .merge(days::day_05::get_routes())
+                .merge(days::day_22::get_routes())
         }
     }
 }

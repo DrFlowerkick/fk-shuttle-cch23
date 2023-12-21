@@ -10,7 +10,6 @@ use s2::cell::Cell;
 use s2::cellid::CellID;
 
 pub fn get_routes() -> Router {
-    eprintln!("loading routes day_21");
     Router::new()
         .route("/21/coords/:binary", get(s2_cell_id_to_dms))
         .route("/21/country/:binary", get(s2_cell_id_to_country))
