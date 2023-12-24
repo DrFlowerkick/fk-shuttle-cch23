@@ -40,10 +40,6 @@ async fn s2_cell_id_to_country(Path(binary): Path<String>) -> AppResult<String> 
     let boundaries = CountryBoundaries::from_reader(BOUNDARIES_ODBL_360X180)?;
     let position = LatLon::new(center.latitude().deg(), center.longitude().deg())?;
     let codes = boundaries.ids(position);
-    eprintln!(
-        "binary: {}, position: {}, codes: {:?}",
-        binary, position, codes
-    );
     let code = *codes
         .last()
         .ok_or(AppError::bad_request("coordinates not in country"))?;
